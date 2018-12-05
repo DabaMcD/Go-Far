@@ -1,7 +1,9 @@
 package com.raptor.raptor.gofar;
 
+import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Display;
 
 public class MainActivity extends AppCompatActivity {
     GameView gameView;
@@ -12,7 +14,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setScreenDims();
+
         gameView = findViewById(R.id.gameView);
+        Touch.setTouchListener(gameView);
         createAndStartMainThread();
     }
     private void createAndStartMainThread() {
@@ -38,5 +43,20 @@ public class MainActivity extends AppCompatActivity {
             }
         };
         mainThread.start();
+    }
+    private void setScreenDims() {
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        Screen.width = size.x;
+        Screen.height = size.y - getStatusBarHeight();
+    }
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
     }
 }

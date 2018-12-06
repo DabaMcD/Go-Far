@@ -44,7 +44,7 @@ public class GameView extends View {
         invalidate();
         requestLayout();
     }
-    void drawGrid(float xOffset, float yOffset, float zOffset, float turn) {
+    void drawGrid(float xOffset, float yOffset, float zOffset, float turn, Canvas canvas) {
         for(int i = grid.size() - 1; i > 0; i--) {
             for(int j = 0; j < grid.get(i).size(); j++) {
                 if(i > drawDistance) {
@@ -77,23 +77,28 @@ public class GameView extends View {
                 }
                 if(water) {
                     float animation = (frameCount % 15) / 15;
-                    c2 = color(0, 96, 255);
-                    var c3 = color(64, 128, 255);
-                    fill(lerpColor(color(128, 112, 96), c2, c));
-                    rect(sx - s, sy - s, s * 2, s * 30);
-                    fill(lerpColor(color(128, 112, 96), lerpColor(c2, c3, animation), c));
-                    rect(sx - s, sy + (s * (animation - 1)), s * 2, s * 0.5);
-                    fill(lerpColor(color(128, 112, 96), lerpColor(c3, c2, animation), c));
-                    rect(sx - s, sy + (s * animation), s * 2, s * 0.5);
+                    c2 = Color.rgb(0, 96, 255);
+                    int c3 = Color.rgb(64, 128, 255);
+                    paint.setColor(Color.rgb(lerpColor(Color.rgb(128, 112, 96), c2, c), lerpColor(Color.rgb(128, 112, 96), c2, c), lerpColor(Color.rgb(128, 112, 96), c2, c)));
+                    rect((float) (sx - s), (float) (sy - s), (float) (s * 2), (float) (s * 30), canvas);
+                    paint.setColor(Color.rgb(lerpColor(Color.rgb(128, 112, 96), lerpColor(c2, c3, animation), c), lerpColor(Color.rgb(128, 112, 96), lerpColor(c2, c3, animation), c), lerpColor(Color.rgb(128, 112, 96), lerpColor(c2, c3, animation), c)));
+                    rect((float) (sx - s), (float) (sy + (s * (animation - 1))), (float) (s * 2), (float) (s * 0.5), canvas);
+                    paint.setColor(Color.rgb(lerpColor(Color.rgb(128, 112, 96), lerpColor(c3, c2, animation), c), lerpColor(Color.rgb(128, 112, 96), lerpColor(c3, c2, animation), c), lerpColor(Color.rgb(128, 112, 96), lerpColor(c3, c2, animation), c)));
+                    rect((float) (sx - s), (float) (sy + (s * animation)), (float) (s * 2), (float) (s * 0.5), canvas);
                 } else {
                     if(i > (drawDistance - 5)) {
-                        fill(128, 112, 96);
-                        stroke(0, 255, 0);
+                        paint.setStyle(Paint.Style.STROKE);
+                        paint.setColor(Color.rgb(0, 255, 0));
+                        rect((float) (sx - s), (float) (sy - s), (float) (s * 2), (float) (s * 300), canvas);
+                        paint.setStyle(Paint.Style.FILL);
+                        paint.setColor(Color.rgb(128, 112, 96));
+                        // todo: make sure the code above isn't showing whackily
                     } else {
-                        noStroke();
-                        fill(lerpColor(color(128, 112, 96), c2, c));
+                        paint.setStyle(Paint.Style.FILL);
+                        paint.setColor(Color.rgb(lerpColor(Color.rgb(128, 112, 96), c2, c), lerpColor(Color.rgb(128, 112, 96), c2, c), lerpColor(Color.rgb(128, 112, 96), c2, c)));
                     }
-                    rect(sx - s, sy - s, s * 2, s * 300);
+                    rect((float) (sx - s), (float) (sy - s), (float) (s * 2), (float) (s * 300), canvas);
+                    paint.setStyle(Paint.Style.FILL_AND_STROKE);
                 }
             }
         }

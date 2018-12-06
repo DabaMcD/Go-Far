@@ -28,6 +28,7 @@ class Touch {
                         x = event.getX();
                         y = event.getY();
                         isTouching = false;
+                        GameView.mouseIsReleased = true;
                         break;
                 }
                 return true;

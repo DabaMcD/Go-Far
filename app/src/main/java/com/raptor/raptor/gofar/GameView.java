@@ -15,6 +15,10 @@ public class GameView extends View {
     private float drawDistance;
     private long frameCount;
     private Paint paint;
+    float buttonW;
+    float buttonH;
+    float buttonTxtSize;
+    static boolean mouseIsReleased = false;
 
     public GameView(Context context) {
         super(context);
@@ -32,17 +36,40 @@ public class GameView extends View {
         grid = new ArrayList<>();
         drawDistance = 0;
         frameCount = 0;
+        buttonW = 160 * Screen.height / 400;
+        buttonH = 40 * Screen.height / 400;
+        buttonTxtSize = 15 * Screen.height / 400;
         paint = new Paint();
     }
     @Override
     protected void onDraw(Canvas canvas) {
-        frameCount ++;
 
+
+        mouseIsReleased = false;
+        frameCount ++;
         super.onDraw(canvas);
     }
     void draw() {
         invalidate();
         requestLayout();
+    }
+    boolean button(String txt, float x, float y, Canvas canvas) {
+        boolean returnValue = false;
+        paint.setColor(Color.argb(80, 0, 0, 0));
+        if(Touch.x > x - (buttonW / 2) && Touch.y > y - (buttonH / 2) && Touch.x < x + (buttonW / 2) && Touch.y < y + (buttonH / 2)) {
+            if(Touch.isTouching) {
+                paint.setColor(Color.argb(120, 0, 0, 0));
+            }
+            if(mouseIsReleased) {
+                returnValue = true;
+            }
+        }
+        roundRect(x - (buttonW / 2), y - (buttonH / 2), buttonW, buttonH, 5, canvas);
+        paint.setColor(Color.rgb(255, 255, 255));
+        paint.setTextSize(buttonTxtSize);
+        paint.setTextAlign(Paint.Align.CENTER);
+        canvas.drawText(txt, x, y + paint.getTextSize() / 3, paint);
+        return returnValue;
     }
     void drawGrid(float xOffset, float yOffset, float zOffset, float turn, Canvas canvas) {
         for(int i = grid.size() - 1; i > 0; i--) {
@@ -105,6 +132,9 @@ public class GameView extends View {
     }
     private void rect(float left, float top, float width, float height, Canvas canvas) {
         canvas.drawRect(left, top, left + width, top + height, paint);
+    }
+    private void roundRect(float left, float top, float width, float height, float rad, Canvas canvas) {
+        canvas.drawRoundRect(left, top, left + width, top + height, rad, rad, paint);
     }
     float constrain(float e, float t, float n) {
         return (((e > n) ? n : e) < t) ? t : e;

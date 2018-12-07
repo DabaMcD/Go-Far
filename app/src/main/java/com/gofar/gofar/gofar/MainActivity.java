@@ -1,4 +1,4 @@
-package com.raptor.raptor.gofar;
+package com.gofar.gofar.gofar;
 
 import android.graphics.Point;
 import android.support.v7.app.AppCompatActivity;

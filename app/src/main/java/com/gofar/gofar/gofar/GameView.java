@@ -1,4 +1,4 @@
-package com.raptor.raptor.gofar;
+package com.gofar.gofar.gofar;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -71,6 +71,27 @@ public class GameView extends View {
         canvas.drawText(txt, x, y + paint.getTextSize() / 3, paint);
         return returnValue;
     }
+//    double generate(float x, float y) {
+//        if((x < ((20 - canyonWidth) + canyonX) || x > ((20 + canyonWidth) + canyonX)) && canyon) {
+//            float d = constrain(abs(x - (20 + canyonX)), 0, 30);
+//            return -(d - canyonWidth) * 5 + Math.random() * 6;
+//        }
+//        if(canyon && abs(x - (20 + canyonX)) < 3) {
+//            return 512 + Math.random();
+//        } else if(canyon) {
+//            return Math.random();
+//        }
+//        double h = Math.random();
+//        if(Math.random() < 0.01 + difficulty * 0.02 && !canyon) {
+//            h = (Math.random() * -5) - 5;
+//        }
+//        if(noise(x * 0.03, (y - distance) * 0.03, 54231) < 0.4 && h > -3) {
+//            h = Math.random() + 1;
+//            h += 512;
+//        }
+//        h += constrain(noise(x * 0.05, (y - distance) * 0.05, 1234) - 0.5, 0, 1) * 300;
+//        return h;
+//    }
     void drawGrid(float xOffset, float yOffset, float zOffset, float turn, Canvas canvas) {
         for(int i = grid.size() - 1; i > 0; i--) {
             for(int j = 0; j < grid.get(i).size(); j++) {

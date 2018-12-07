@@ -1,4 +1,4 @@
-package com.raptor.raptor.gofar;
+package com.gofar.gofar.gofar;
 
 class Screen {
     static int width;

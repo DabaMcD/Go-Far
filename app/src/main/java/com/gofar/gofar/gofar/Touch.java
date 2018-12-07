@@ -1,4 +1,4 @@
-package com.raptor.raptor.gofar;
+package com.gofar.gofar.gofar;
 
 import android.view.MotionEvent;
 import android.view.View;

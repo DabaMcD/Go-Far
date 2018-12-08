@@ -16,13 +16,15 @@ public class GameView extends View {
     private long frameCount;
     private Paint paint;
     private float buttonW, buttonH, buttonTxtSize;
-    private float canyonWidth, canyonX, canyonDistance;
+    private float canyonX, canyonDistance;
+    private double canyonWidth;
     private boolean canyon;
     private float distance, difficulty;
     private String state;
     private int startDifficulty;
+    private float x;
+    private ArrayList<String> difficulties;
     static boolean mouseIsReleased = false;
-    // TODO: RUN THIS ON THE ANDROID EMULATOR!!!!!
 
     public GameView(Context context) {
         super(context);
@@ -50,11 +52,156 @@ public class GameView extends View {
         distance = 0;
         difficulty = 0;
         startDifficulty = 0;
+        difficulties = new ArrayList<>();
+        difficulties.add("Easy");
+        difficulties.add("Medium");
+        difficulties.add("Hard");
+        difficulties.add("Insane");
+        x = 0;
         state = "menu";
         paint = new Paint();
     }
     @Override
     protected void onDraw(Canvas canvas) {
+        paint.setColor(Color.rgb(128, 112, 96));
+        canvas.drawRect(-10, -10, Screen.width + 10, Screen.height + 10, paint);
+        paint.setStyle(Paint.Style.FILL);
+
+        switch(state) {
+            case "menu":
+                paint.setTextAlign(Paint.Align.CENTER);
+                paint.setTextSize(20);
+                text("Go Far", Screen.width / 2, Screen.height / 8, canvas);
+                paint.setTextSize(10);
+                text("a ◄BLITZ► game", Screen.width / 2, Screen.height / 5, canvas);
+
+                if(button("Play", Screen.width / 2, Screen.height / 2, canvas)) {
+                    state = "newGame";
+                }
+                if(button("Help", Screen.width / 2, Screen.height * 5 / 8, canvas)) {
+                    state = "help";
+                }
+                break;
+            case "help":
+                paint.setTextSize(12);
+                paint.setTextAlign(Paint.Align.CENTER);
+                text("Move the mouse left and right to move left and right.\nDon't hit anything!", 200, 200, canvas);
+                if(button("Back", Screen.width / 2, Screen.height * 5 / 8, canvas)) {
+                    state = "menu";
+                }
+                break;
+            case "newGame":
+                paint.setTextSize(12);
+                paint.setTextAlign(Paint.Align.CENTER);
+                if(button("Easy", Screen.width / 2, Screen.height * 3 / 8, canvas)) {
+                    initGame(0);
+                }
+                if(button("Medium", Screen.width / 2, Screen.height / 2, canvas)) {
+                    initGame(1);
+                }
+                if(button("Hard", Screen.width / 2, Screen.height * 5 / 8, canvas)) {
+                    initGame(2);
+                }
+                if(button("Insane", Screen.width / 2, Screen.height * 3 / 4, canvas)) {
+                    initGame(3);
+                }
+                break;
+            case "game":
+                canvas.save();
+                canvas.scale(Screen.width / 400, Screen.height / 400);
+                if(Math.random() < 0.01 && canyonDistance > 100) {
+                    canyonDistance = 0;
+                    if(!canyon) {
+                        canyonWidth = Math.floor(Math.random() * 4 + 4);
+                        canyonDistance = -20;
+                    } else {
+                        canyon = false;
+                    }
+                }
+                if(canyonDistance == -1) {
+                    canyonX = 0;
+                    canyon = true;
+                }
+                canyonX += Math.round(Math.random() * 2 - 1);
+                canyonWidth += Math.round(Math.random() * 2 - 1);
+                canyonWidth = constrain((float) canyonWidth, constrain((float) (4 - (difficulty * 0.9)), (float) 1.5, 4), 8);
+                if((frameCount % 3) == 0) {
+                    canyonDistance++;
+                    distance++;
+                    grid.shift();
+                    ArrayList<Double> newline = new ArrayList<>();
+                    for(int i = 0; i < 40; i++) {
+                        newline.add(generate(i, 0));
+                    }
+                    grid.add(newline);
+                }
+                while(x < -0.5) {
+                    canyonX++;
+                    x += 1;
+                    for(int i = 0; i < grid.size(); i++) {
+                        grid.get(i).pop();
+                        grid.get(i).unshift(generate(0, i));
+                    }
+                }
+                while(x > 0.5) {
+                    canyonX--;
+                    x -= 1;
+                    for(int i = 0; i < grid.size(); i ++) {
+                        grid.get(i).shift();
+                        grid.get(i).add(generate(0, i));
+                    }
+                }
+                canvas.save();
+                canvas.translate(200, 200);
+                canvas.rotate((float) (((Touch.x * 0.005) - 1) * -10));
+                drawGrid(x + 20, (frameCount / 3) % 1, -3, (float) ((Touch.x - 200) * 0.005), canvas);
+                canvas.restore();
+                x += (Touch.x * 0.005) - 1;
+                if(canyonDistance < -1) {
+                    paint.setTextSize(20);
+                    paint.setTextAlign(Paint.Align.CENTER);
+                    paint.setColor(Color.argb((int) (Math.sin(frameCount * 20) * 50 + 100), 255, 0, 0));
+                    text("Canyon approaching!", 200, 50, canvas);
+                }
+                paint.setColor(Color.rgb(255, 255, 255));
+                paint.setTextSize(12);
+                paint.setTextAlign(Paint.Align.LEFT);
+                canvas.drawText(distance + " score", 3, 3 - paint.getTextSize() * 2 / 3, canvas);
+                if(grid.get(1).get((int) (Math.floor(20 + x + 0.5))) < -3) {
+                    state = "gameover";
+                    frameCount = 200;
+                    drawDistance = 30;
+                }
+                if(drawDistance < 30) {
+                    drawDistance += 0.8;
+                }
+                difficulty += 0.001;
+                canvas.restore();
+                break;
+            case "gameover":
+                paint.setTextSize(buttonTxtSize * 4 / 5);
+                paint.setTextAlign(Paint.Align.CENTER);
+                int framesSinceDeath = (int) (frameCount - 200);
+                double fly = constrain((framesSinceDeath / 50), 0, 1);
+                fly = 1 - Math.pow(1 - fly, 5);
+                canvas.save();
+                canvas.scale(Screen.width / 400, Screen.height / 400);
+                canvas.translate(200, 200);
+                canvas.rotate(lerp((float) (((Touch.x * 0.005) - 1) * -30), 0, (float) fly));
+                drawGrid(x + 20, (float) (-fly * 0.2), (float) (-3 + fly * 2), 0, canvas);
+                canvas.restore();
+                paint.setColor(Color.argb(150, 0, 0, 0));
+                roundRect((Screen.width - buttonW) / 2, (Screen.height - buttonH) / 2, buttonW, buttonH, 5, canvas);
+                paint.setColor(Color.rgb(255, 255, 255));
+                text("Score: " + distance + "\nDifficulty: " + difficulties.get(startDifficulty), Screen.width / 2, Screen.height / 2, canvas);
+                if(button("Menu", Screen.width - (buttonW / 2) - (10 * (Screen.height / 400)), Screen.height - buttonH / 2 - (10 * (Screen.height / 400)), canvas)) {
+                    state = "menu";
+                }
+                if(button("Retry", buttonW / 2 + (10 * (Screen.height / 400)), Screen.height - buttonH / 2 - (10 * (Screen.height / 400)), canvas)) {
+                    initGame(startDifficulty);
+                }
+                break;
+        }
 
         mouseIsReleased = false;
         frameCount ++;
@@ -201,5 +348,11 @@ public class GameView extends View {
         int green = (int) (Color.green(a) * phase + Color.green(b) * (1 - phase));
         int blue = (int) (Color.blue(a) * phase + Color.blue(b) * (1 - phase));
         return Color.rgb(red, green, blue);
+    }
+    void text(String text, float x, float y, Canvas canvas) {
+        canvas.drawText(text, x, y - paint.getTextSize() / 3, paint);
+    }
+    float lerp(float e, float t, float n){
+        return (t - e) * n + e;
     }
 }

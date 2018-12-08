@@ -15,10 +15,12 @@ public class GameView extends View {
     private float drawDistance;
     private long frameCount;
     private Paint paint;
-    float buttonW, buttonH, buttonTxtSize;
-    float canyonWidth, canyonX;
-    boolean canyon;
-    float distance, difficulty;
+    private float buttonW, buttonH, buttonTxtSize;
+    private float canyonWidth, canyonX, canyonDistance;
+    private boolean canyon;
+    private float distance, difficulty;
+    private String state;
+    private int startDifficulty;
     static boolean mouseIsReleased = false;
     // TODO: RUN THIS ON THE ANDROID EMULATOR!!!!!
 
@@ -43,9 +45,12 @@ public class GameView extends View {
         buttonTxtSize = 15 * Screen.height / 400;
         canyonWidth = 5;
         canyonX = 0;
+        canyonDistance = 0;
         canyon = false;
         distance = 0;
         difficulty = 0;
+        startDifficulty = 0;
+        state = "menu";
         paint = new Paint();
     }
     @Override
@@ -58,6 +63,23 @@ public class GameView extends View {
     void draw() {
         invalidate();
         requestLayout();
+    }
+    void initGame(int d) {
+        startDifficulty = d;
+        difficulty = d;
+        grid = new ArrayList<>();
+        state = "game";
+
+        for(int i = 0; i < 19; i++) {
+            grid.add(new ArrayList<Double>());
+            for(int j = 0; j < 40; j++) {
+                grid.get(i).add(Math.random());
+            }
+        }
+        distance = 0;
+        canyon = false;
+        drawDistance = 0;
+        canyonDistance = 0;
     }
     boolean button(String txt, float x, float y, Canvas canvas) {
         boolean returnValue = false;

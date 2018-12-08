@@ -7,9 +7,6 @@ class Noise {
     private static final int SEED_NOISE_GEN = 1013;
     private static final int SHIFT_NOISE_GEN = 8;
 
-    private Noise() {
-    }
-
     /**
      * Generates a gradient-coherent-noise value from the coordinates of a three-dimensional input value.
      *
@@ -142,10 +139,10 @@ class Noise {
      * <p/>
      * A noise function differs from a random-number generator because it always returns the same output value if the same input value is passed to it.
      */
-    static int intValueNoise3D(int x, int y, int z, int seed) {
+    static int intValueNoise3D(double x, double y, double z, int seed) {
         // All constants are primes and must remain prime in order for this noise
         // function to work correctly.
-        int n = (X_NOISE_GEN * x + Y_NOISE_GEN * y + Z_NOISE_GEN * z + SEED_NOISE_GEN * seed) & 0x7fffffff;
+        int n = (int) (X_NOISE_GEN * x + Y_NOISE_GEN * y + Z_NOISE_GEN * z + SEED_NOISE_GEN * seed) & 0x7fffffff;
         n = (n >> 13) ^ n;
         return (n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff;
     }
@@ -214,6 +211,10 @@ class Noise {
         return Utils.linearInterp(iy0, iy1, zs);
     }
 
+    static double noise(double x, double y) {
+        return valueNoise3D(x, y, 0f, 10);
+    }
+
     /**
      * Generates a value-noise value from the coordinates of a three-dimensional input value.
      *
@@ -227,7 +228,7 @@ class Noise {
      * <p/>
      * A noise function differs from a random-number generator because it always returns the same output value if the same input value is passed to it.
      */
-    static double valueNoise3D(int x, int y, int z, int seed) {
+    static double valueNoise3D(double x, double y, double z, int seed) {
         return intValueNoise3D(x, y, z, seed) / 2147483647.0;
     }
 }

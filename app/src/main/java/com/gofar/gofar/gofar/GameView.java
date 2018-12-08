@@ -15,10 +15,12 @@ public class GameView extends View {
     private float drawDistance;
     private long frameCount;
     private Paint paint;
-    float buttonW;
-    float buttonH;
-    float buttonTxtSize;
+    float buttonW, buttonH, buttonTxtSize;
+    float canyonWidth, canyonX;
+    boolean canyon;
+    float distance, difficulty;
     static boolean mouseIsReleased = false;
+    // TODO: RUN THIS ON THE ANDROID EMULATOR!!!!!
 
     public GameView(Context context) {
         super(context);
@@ -39,11 +41,15 @@ public class GameView extends View {
         buttonW = 160 * Screen.height / 400;
         buttonH = 40 * Screen.height / 400;
         buttonTxtSize = 15 * Screen.height / 400;
+        canyonWidth = 5;
+        canyonX = 0;
+        canyon = false;
+        distance = 0;
+        difficulty = 0;
         paint = new Paint();
     }
     @Override
     protected void onDraw(Canvas canvas) {
-
 
         mouseIsReleased = false;
         frameCount ++;
@@ -71,27 +77,29 @@ public class GameView extends View {
         canvas.drawText(txt, x, y + paint.getTextSize() / 3, paint);
         return returnValue;
     }
-//    double generate(float x, float y) {
-//        if((x < ((20 - canyonWidth) + canyonX) || x > ((20 + canyonWidth) + canyonX)) && canyon) {
-//            float d = constrain(abs(x - (20 + canyonX)), 0, 30);
-//            return -(d - canyonWidth) * 5 + Math.random() * 6;
-//        }
-//        if(canyon && abs(x - (20 + canyonX)) < 3) {
-//            return 512 + Math.random();
-//        } else if(canyon) {
-//            return Math.random();
-//        }
-//        double h = Math.random();
-//        if(Math.random() < 0.01 + difficulty * 0.02 && !canyon) {
-//            h = (Math.random() * -5) - 5;
-//        }
-//        if(noise(x * 0.03, (y - distance) * 0.03, 54231) < 0.4 && h > -3) {
-//            h = Math.random() + 1;
-//            h += 512;
-//        }
-//        h += constrain(noise(x * 0.05, (y - distance) * 0.05, 1234) - 0.5, 0, 1) * 300;
-//        return h;
-//    }
+    double generate(float x, float y) {
+        if((x < ((20 - canyonWidth) + canyonX) || x > ((20 + canyonWidth) + canyonX)) && canyon) {
+            float d = constrain(Math.abs(x - (20 + canyonX)), 0, 30);
+            return -(d - canyonWidth) * 5 + Math.random() * 6;
+        }
+        if(canyon && Math.abs(x - (20 + canyonX)) < 3) {
+            return 512 + Math.random();
+        } else if(canyon) {
+            return Math.random();
+        }
+        double h = Math.random();
+        if(Math.random() < 0.01 + difficulty * 0.02 && !canyon) {
+            h = (Math.random() * -5) - 5;
+        }
+        if(Noise.noise(x * 0.03, (y - distance) * 0.03) < 0.4 && h > -3) {
+            h = Math.random() + 1;
+            h += 512;
+        }
+        h += constrain((float) (Noise.noise(x * 0.05, (y - distance) * 0.05) - 0.5), 0, 1) * 300;
+        return h;
+
+        // TODO: likely some Perlin Noise issues in the code above
+    }
     void drawGrid(float xOffset, float yOffset, float zOffset, float turn, Canvas canvas) {
         for(int i = grid.size() - 1; i > 0; i--) {
             for(int j = 0; j < grid.get(i).size(); j++) {

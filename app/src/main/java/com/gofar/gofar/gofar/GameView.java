@@ -20,11 +20,11 @@ public class GameView extends View {
     private double canyonWidth;
     private boolean canyon;
     private float distance, difficulty;
-    private String state;
+    String state;
     private int startDifficulty;
     private float x;
     private ArrayList<String> difficulties;
-    static boolean mouseIsReleased = false;
+    boolean mouseIsReleased = false;
 
     public GameView(Context context) {
         super(context);
@@ -139,7 +139,7 @@ public class GameView extends View {
                     canyonX++;
                     x += 1;
                     for(int i = 0; i < grid.size(); i++) {
-                        grid.get(i).pop();
+                        grid.get(i).remove(grid.size() - 1);
                         grid.get(i).unshift(generate(0, i));
                     }
                 }
@@ -151,6 +151,7 @@ public class GameView extends View {
                         grid.get(i).add(generate(0, i));
                     }
                 }
+                // todo: research shift() and unshift() once internet gets back on
                 canvas.save();
                 canvas.translate(200, 200);
                 canvas.rotate((float) (((Touch.x * 0.005) - 1) * -10));
@@ -166,7 +167,7 @@ public class GameView extends View {
                 paint.setColor(Color.rgb(255, 255, 255));
                 paint.setTextSize(12);
                 paint.setTextAlign(Paint.Align.LEFT);
-                canvas.drawText(distance + " score", 3, 3 - paint.getTextSize() * 2 / 3, canvas);
+                canvas.drawText(distance + " score", 3, 3 - paint.getTextSize() * 2 / 3, paint);
                 if(grid.get(1).get((int) (Math.floor(20 + x + 0.5))) < -3) {
                     state = "gameover";
                     frameCount = 200;

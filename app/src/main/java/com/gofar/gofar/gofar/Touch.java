@@ -8,7 +8,7 @@ class Touch {
     static float y;
     static boolean isTouching = false;
 
-    static void setTouchListener(View view) {
+    static void setTouchListener(View view, final GameView gameView) {
         view.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -23,12 +23,16 @@ class Touch {
                         x = event.getX();
                         y = event.getY();
                         isTouching = true;
+                        if(gameView.state.equals("game")) {
+                            Touch.x /= Screen.width / 400;
+                            Touch.y /= Screen.height / 400;
+                        }
                         break;
                     case MotionEvent.ACTION_UP:
                         x = event.getX();
                         y = event.getY();
                         isTouching = false;
-                        GameView.mouseIsReleased = true;
+                        gameView.mouseIsReleased = true;
                         break;
                 }
                 return true;

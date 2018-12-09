@@ -28,17 +28,14 @@ public class GameView extends View {
 
     public GameView(Context context) {
         super(context);
-        constructor();
     }
     public GameView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        constructor();
     }
     public GameView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        constructor();
     }
-    private void constructor() {
+    void constructor() {
         grid = new ArrayList<>();
         drawDistance = 0;
         frameCount = 0;
@@ -66,6 +63,7 @@ public class GameView extends View {
         paint.setColor(Color.rgb(128, 112, 96));
         canvas.drawRect(-10, -10, Screen.width + 10, Screen.height + 10, paint);
         paint.setStyle(Paint.Style.FILL);
+        paint.setColor(Color.rgb(255, 255, 255));
 
         switch(state) {
             case "menu":
@@ -128,7 +126,7 @@ public class GameView extends View {
                 if((frameCount % 3) == 0) {
                     canyonDistance++;
                     distance++;
-                    grid.shift();
+                    grid.remove(0);
                     ArrayList<Double> newline = new ArrayList<>();
                     for(int i = 0; i < 40; i++) {
                         newline.add(generate(i, 0));
@@ -140,18 +138,17 @@ public class GameView extends View {
                     x += 1;
                     for(int i = 0; i < grid.size(); i++) {
                         grid.get(i).remove(grid.size() - 1);
-                        grid.get(i).unshift(generate(0, i));
+                        grid.get(i).add(0, generate(0, i));
                     }
                 }
                 while(x > 0.5) {
                     canyonX--;
                     x -= 1;
                     for(int i = 0; i < grid.size(); i ++) {
-                        grid.get(i).shift();
+                        grid.get(i).remove(0);
                         grid.get(i).add(generate(0, i));
                     }
                 }
-                // todo: research shift() and unshift() once internet gets back on
                 canvas.save();
                 canvas.translate(200, 200);
                 canvas.rotate((float) (((Touch.x * 0.005) - 1) * -10));
